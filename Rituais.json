@@ -1,0 +1,489 @@
+{
+  "name": "Rituais",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=// <User Prompt>\nPeríodo: {{ $json.period }}\n\nArquivos encontrados:\n{{ $json.filesFound.map(f => f.name).join('\\n') }}\n\nValide **somente** estes padrões (extensões `.xlsx`, `.pptx` ou `.docx`):\n\n— semanal (6):  \n  • “Ata reunião de obra”              → ^ATA_REUNIAO_OBRA-S\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Lista presença DSS”               → ^PRESENCA_DSS-S\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Lista presença integração treinos”→ ^PRESENCA_TREINAMENTO-S\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Segurança do trabalho”            → ^RELATORIO_SEG_TRAB-S\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Painel PCP”                       → ^PAINEL_PCP-S\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Relatório qualidade”              → ^RELATORIO_QUALIDADE-S\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n\n— quinzenal (3):  \n  • “Ata reunião restrições”           → ^REUNIAO_RESTRICOES-Q[12]\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “PMP”                              → ^PMP-Q[12]\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Ata reunião projetos”             → ^ATA_REUNIAO_PROJETOS-Q[12]\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n\n— mensal (4):  \n  • “Apresentação resultados”          → ^APRESENTACAO_RESULTADOS-\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Auditoria seg. trabalho”          → ^AUDITORIA_SEG_TRABALHO-\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Auditoria qualidade”              → ^AUDITORIA_QUALIDADE-\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n  • “Painel avaliação terceiros”       → ^PAINEL_AVAL_TERCEIROS-\\\\d{2}-\\\\d{4}\\\\.(xlsx|pptx|docx)$  \n\nRetorne **só** o JSON:\n```json\n{\n  \"presentes\": [ /* \"filename — descrição\" */ ],\n  \"faltantes\": [ /* descrição */ ]\n}\n",
+        "options": {
+          "systemMessage": "Você é um agente de validação de arquivos de “rituais” (reuniões e relatórios).\n\nConforme o valor de `period`, **somente** estes documentos **exatos** (extensões `.xlsx`, `.pptx` ou `.docx`) devem ser considerados:\n\n— **semanal** (6 arquivos)  \n  • ATA_REUNIAO_OBRA-S{SEMANA}-{ANO}.(xlsx|pptx|docx) — Ata reunião de obra  \n  • PRESENCA_DSS-S{SEMANA}-{ANO}.(xlsx|pptx|docx) — Lista presença DSS  \n  • PRESENCA_TREINAMENTO-S{SEMANA}-{ANO}.(xlsx|pptx|docx) — Lista presença integração treinamentos  \n  • RELATORIO_SEG_TRAB-S{SEMANA}-{ANO}.(xlsx|pptx|docx) — Segurança do trabalho  \n  • PAINEL_PCP-S{SEMANA}-{ANO}.(xlsx|pptx|docx) — Painel PCP  \n  • RELATORIO_QUALIDADE-S{SEMANA}-{ANO}.(xlsx|pptx|docx) — Relatório qualidade  \n\n— **quinzenal** (3 arquivos)  \n  • REUNIAO_RESTRICOES-Q{QUINZA}{MES}-{ANO}.(xlsx|pptx|docx) — Ata reunião restrições  \n  • PMP-Q{QUINZA}{MES}-{ANO}.(xlsx|pptx|docx) — PMP  \n  • ATA_REUNIAO_PROJETOS-Q{QUINZA}{MES}-{ANO}.(xlsx|pptx|docx) — Ata reunião alinhamento projetos  \n\n— **mensal** (4 arquivos)  \n  • APRESENTACAO_RESULTADOS-{MES}-{ANO}.(xlsx|pptx|docx) — Apresentação resultados  \n  • AUDITORIA_SEG_TRABALHO-{MES}-{ANO}.(xlsx|pptx|docx) — Auditoria segurança do trabalho  \n  • AUDITORIA_QUALIDADE-{MES}-{ANO}.(xlsx|pptx|docx) — Auditoria qualidade  \n  • PAINEL_AVAL_TERCEIROS-{MES}-{ANO}.(xlsx|pptx|docx) — Painel avaliação terceiros  \n\nExtraia o **SUFIXO** de cada `filename` em `filesFound` e compare estritamente com esses padrões.  \nRetorne **apenas** o seguinte JSON:\n\n```json\n{\n  \"presentes\": [ \"filename — descrição\", … ],\n  \"faltantes\": [ \"descrição\", … ]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        208
+      ],
+      "id": "6b9257fd-aa8b-4d09-b9a4-0d48f257a626",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        416
+      ],
+      "id": "a703ecb5-f054-4065-9e91-3b23f250c367",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "9h13WgpqD1ZJPJhA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "analises@construtoram21.com.br, qualidadeeseguranca@construtoram21.com.br, evineluzardo@construtoram21.com.br,",
+        "subject": "Rituais ",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2128,
+        208
+      ],
+      "id": "a292ffff-a134-4e33-b170-41fc8b6846cc",
+      "name": "Gmail1",
+      "webhookId": "835a8962-e178-4dfa-b4f6-7f7b303662c7",
+      "executeOnce": false,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xZuos02f4xlhZrho",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Entrada: vários itens vindos do Drive, cada um com { id, name }\n * Saída  : lista única de objetos { id, name } sem repetição de name\n */\nconst items = $input.all().map(i => i.json);\n\nconst seen = new Set();\nconst unique = [];\n\nfor (const item of items) {\n  if (!seen.has(item.name)) {\n    seen.add(item.name);\n    unique.push(item);\n  }\n}\n\n// n8n espera um array de { json: {...} }\nreturn unique.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        208
+      ],
+      "id": "c8665b90-58cf-4f1c-a7a4-f6295375be2a",
+      "name": "REMOVE DUPLICATES2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// PrepareAndFilter (corrigido)\nlet period;\n\n// 1) Detecta o period ativo\ntry { period = $items(\"Set semana\")[0].json.period; } catch {}\nif (!period) {\n  try { period = $items(\"Set quinzena\")[0].json.period; } catch {}\n}\nif (!period) {\n  try { period = $items(\"Set Mes\")[0].json.period; } catch {}\n}\n\n// 2) Agrega todos os arquivos vindos de REMOVE DUPLICATES\nconst filesFound = $input.all().map(item => ({\n  id:   item.json.id,\n  name: item.json.name,\n}));\n\n// 3) Calcula ano, mês, semana ISO e quinzena para o sufixo\nconst now   = new Date();\nconst pad   = n => String(n).padStart(2,'0');\nconst year  = now.getUTCFullYear();\nconst month = pad(now.getUTCMonth() + 1);\n\nconst isoWeek = (() => {\n  const tmp = new Date(Date.UTC(year, now.getUTCMonth(), now.getUTCDate()));\n  tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));\n  const y0 = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));\n  return pad(Math.ceil((((tmp - y0) / 86400000) + 1) / 7));\n})();\n\nconst quinza = now.getUTCDate() <= 15 ? '1' : '2';\n\n// 4) Define o sufixo conforme o period (ordem corrigida)\nlet suffix;\nif (period === 'semanal') {\n  // ex: \"S25-2025\"\n  suffix = `S${isoWeek}-${year}`;\n} else if (period === 'quinzenal') {\n  // ex: \"Q206-2025\"\n  suffix = `Q${quinza}${month}-${year}`;\n} else {\n  // mensal: \"06-2025\"\n  suffix = `${month}-${year}`;\n}\n\n// 5) Filtra só os arquivos cujo name inclua esse sufixo\nconst current = filesFound.filter(f => f.name.includes(suffix));\n\n// 6) Retorna period + lista filtrada\nreturn [\n  {\n    json: {\n      period,\n      filesFound: current,\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        208
+      ],
+      "id": "77d7b448-e4c1-48d8-9673-3006e44e1198",
+      "name": "PrepareAndFilter"
+    },
+    {
+      "parameters": {
+        "jsCode": "// O agent colocou o JSON dentro de output, mas com ```json …```\n// Vamos limpar e parsear.\n\nconst raw = $json.output;\n\n// Tira os fences ```json e ```\nconst inside = (raw.match(/```json\\s*([\\s\\S]*?)```/) || [])[1] || raw;\n\n// Parseia\nlet data;\ntry {\n  data = JSON.parse(inside);\n} catch (e) {\n  throw new Error('Falha ao parsear JSON do agent: ' + e.message);\n}\n\n// Se quiser reter o period original, você pode puxar de $items(\"PrepareAndFilter1\")[0].json.period\nconst period = $items(\"PrepareAndFilter\")[0].json.period;\n\n// Retorna tudo pronto para o HTML Template ou Gmail\nreturn [{\n  json: {\n    period,\n    presentes: data.presentes,\n    faltantes: data.faltantes,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        208
+      ],
+      "id": "e4b82b84-be54-40d6-b001-d78ecd6d7e73",
+      "name": "Preparar mensagem"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Gera o HTML final a partir de period, presentes e faltantes\n */\nconst { period, presentes, faltantes } = $json;\n\n// Cabeçalho\nlet html = `<h2 style=\"font-family:Arial,sans-serif;\">[${period.toUpperCase()}] Validação de arquivos</h2>\\n\\n`;\n\n// Presentes\nhtml += `<h3 style=\"font-family:Arial,sans-serif; margin-bottom:4px;\">✅ Presentes</h3>\\n`;\nhtml += `<ul style=\"font-family:Arial,sans-serif; margin:0; padding-left:16px;\">\\n`;\nfor (const item of presentes) {\n  html += `  <li>${item}</li>\\n`;\n}\nhtml += `</ul>\\n\\n`;\n\n// Faltantes\nhtml += `<h3 style=\"font-family:Arial,sans-serif; margin-bottom:4px;\">❌ Faltantes</h3>\\n`;\nhtml += `<ul style=\"font-family:Arial,sans-serif; margin:0; padding-left:16px;\">\\n`;\nif (faltantes.length === 0 || (faltantes.length === 1 && faltantes[0] === 'Nenhum faltante')) {\n  html += `  <li>Nenhum faltante</li>\\n`;\n} else {\n  for (const desc of faltantes) {\n    html += `  <li>${desc}</li>\\n`;\n  }\n}\nhtml += `</ul>`;\n\n// Retorna o HTML pronto\nreturn [{ json: { html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1904,
+        208
+      ],
+      "id": "a0bdfb82-2d90-4e4f-b6d4-ebaf6955e7e1",
+      "name": "HTML mensage"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        48
+      ],
+      "id": "838cfe84-4c14-40da-a863-2aba6e963d71",
+      "name": "Semanal"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 1,16 * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        256
+      ],
+      "id": "0d8d74ba-8187-4cb2-b18e-69c7b2347aed",
+      "name": "Quinzenal"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 31,
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        432
+      ],
+      "id": "f26cbc12-2776-48f7-a25c-2d6148ddb773",
+      "name": "Mensal"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c796f954-8c10-4dbe-8770-ec9378fa95ef",
+              "name": "period",
+              "value": "=semanal",
+              "type": "string"
+            },
+            {
+              "id": "2add5a16-8bca-4034-9bb6-d32a7461415b",
+              "name": "=tz",
+              "value": "={{$vars.TZ || 'UTC'}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d8ad5ede-1d65-4ffc-a77c-263e32cccbd2",
+      "name": "Set semana"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a6946d7-c461-4eec-bec7-e7778dfaec2a",
+              "name": "period",
+              "value": "quinzenal",
+              "type": "string"
+            },
+            {
+              "id": "ab2fa4af-17fc-4a03-89e5-d067e7158153",
+              "name": "tz",
+              "value": "={{$vars.TZ || 'UTC'}}",
+              "type": "string"
+            },
+            {
+              "id": "ca308675-9d46-4b48-9fd2-a6c951cabfb4",
+              "name": "",
+              "value": "=",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        240
+      ],
+      "id": "c20dd0dd-e01a-444f-8a69-21378c1693fa",
+      "name": "Set quinzena"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a6946d7-c461-4eec-bec7-e7778dfaec2a",
+              "name": "period",
+              "value": "mensal",
+              "type": "string"
+            },
+            {
+              "id": "9aaa9a84-fff4-48d5-9cf5-a10dd9f0afd9",
+              "name": "tz",
+              "value": "America/Araguaina",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        432
+      ],
+      "id": "b9c721b7-d8ed-49a3-adb2-431a38e6aa27",
+      "name": "Set Mes"
+    },
+    {
+      "parameters": {
+        "jsCode": "// <Mapeamento arquivos>\n/*\n  Entrada : { period, tz }\n  Saída   : [{ pastaId, filePattern, desc, startDate, endDate }]\n*/\nconst { period, tz = 'UTC' } = $json;\n\n// IDs vindos de variáveis globais\nconst IDS = {\n  // REL_SEMANAL: $vars.GDRIVE_REL_SEMANAL,\n  // REL_MENSAL:  $vars.GDRIVE_REL_MENSAL,\n  // REU_SEMANAL: $vars.GDRIVE_REU_SEMANAL,\n  // REU_QUINZ:   $vars.GDRIVE_REU_QUINZ,\n  // REU_MENSAL:  $vars.GDRIVE_REU_MENSAL,\n  PASTA_TEST:  $vars.PASTA_TEST,\n  DROP : $vars.DROP_TESTE\n};\n\n// Helpers de data\nconst now    = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));\nconst pad    = n => String(n).padStart(2, '0');\nconst year   = now.getUTCFullYear();\nconst month  = pad(now.getUTCMonth() + 1);\n\n// Semana ISO\nconst isoWeek = (() => {\n  const tmp = new Date(Date.UTC(year, now.getUTCMonth(), now.getUTCDate()));\n  tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));\n  const y0  = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));\n  return pad(Math.ceil((((tmp - y0) / 86400000) + 1) / 7));\n})();\n\n// Quinzena\nconst quinza = now.getUTCDate() <= 15 ? '1' : '2';\n\n// Intervalo\nconst endDate = now.toISOString();\nlet startDate;\nif (period === 'semanal')       startDate = new Date(now.getTime() - 7*86400000).toISOString();\nelse if (period === 'quinzenal') startDate = new Date(now.getTime() - 15*86400000).toISOString();\nelse                             startDate = new Date(year, now.getUTCMonth()-1, now.getUTCDate()).toISOString();\n\n// Padrões com regex de extensão flexível\nconst catalogo = [\n  // Semanal\n  {\n    pasta: IDS.DROP,\n    filePattern: `^ATA_REUNIAO_OBRA-S${isoWeek}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Ata reunião de obra',\n    tipo: 'semanal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^PRESENCA_DSS-S${isoWeek}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Lista presença DSS',\n    tipo: 'semanal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^PRESENCA_TREINAMENTO-S${isoWeek}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Lista presença integração treinamentos',\n    tipo: 'semanal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^RELATORIO_SEG_TRAB-S${isoWeek}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Segurança do trabalho',\n    tipo: 'semanal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^PAINEL_PCP-S${isoWeek}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Painel PCP',\n    tipo: 'semanal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^RELATORIO_QUALIDADE-S${isoWeek}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Relatório qualidade',\n    tipo: 'semanal',\n  },\n\n  // Quinzenal\n  {\n    pasta: IDS.DROP,\n    filePattern: `^REUNIAO_RESTRICOES-Q${quinza}${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Ata reunião restrições',\n    tipo: 'quinzenal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^PMP-Q${quinza}${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'PMP',\n    tipo: 'quinzenal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^ATA_REUNIAO_PROJETOS-Q${quinza}${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Ata reunião alinhamento projetos',\n    tipo: 'quinzenal',\n  },\n\n  // Mensal\n  {\n    pasta: IDS.DROP,\n    filePattern: `^APRESENTACAO_RESULTADOS-${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Apresentação resultados',\n    tipo: 'mensal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^AUDITORIA_SEG_TRABALHO-${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Auditoria segurança do trabalho',\n    tipo: 'mensal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^AUDITORIA_QUALIDADE-${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Auditoria qualidade',\n    tipo: 'mensal',\n  },\n  {\n    pasta: IDS.DROP,\n    filePattern: `^PAINEL_AVAL_TERCEIROS-${month}-${year}\\\\.(xlsx|pptx|docx)$`,\n    desc: 'Painel avaliação terceiros',\n    tipo: 'mensal',\n  },\n];\n\nreturn catalogo\n  .filter(t => t.tipo === period)\n  .map(t => ({\n    pastaId:    t.pasta,\n    filePattern:t.filePattern,\n    desc:       t.desc,\n    startDate,\n    endDate,\n  }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        208
+      ],
+      "id": "211d4dce-f781-4782-92e6-7702bde5e933",
+      "name": "Mapeamento arquivos",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "folder",
+        "operation": "list",
+        "path": "/TESTE N8N",
+        "returnAll": true,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "92262c98-aad8-48f9-98ff-432cb54228b9",
+      "name": "Dropbox",
+      "alwaysOutputData": true,
+      "credentials": {
+        "dropboxOAuth2Api": {
+          "id": "TNdNr4yQsPwQl0xY",
+          "name": "Dropbox account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Preparar mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "REMOVE DUPLICATES2": {
+      "main": [
+        [
+          {
+            "node": "PrepareAndFilter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PrepareAndFilter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar mensagem": {
+      "main": [
+        [
+          {
+            "node": "HTML mensage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML mensage": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Semanal": {
+      "main": [
+        [
+          {
+            "node": "Set semana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quinzenal": {
+      "main": [
+        [
+          {
+            "node": "Set quinzena",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensal": {
+      "main": [
+        [
+          {
+            "node": "Set Mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set semana": {
+      "main": [
+        [
+          {
+            "node": "Mapeamento arquivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set quinzena": {
+      "main": [
+        [
+          {
+            "node": "Mapeamento arquivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Mes": {
+      "main": [
+        [
+          {
+            "node": "Mapeamento arquivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapeamento arquivos": {
+      "main": [
+        [
+          {
+            "node": "Dropbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dropbox": {
+      "main": [
+        [
+          {
+            "node": "REMOVE DUPLICATES2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fcaf4930-bc2a-4443-9695-db21360f4b3c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cad0e5eba773b9d5623af700b343a1989510c5ac8ccc4899816749f0727cac77"
+  },
+  "id": "bOfPpFv3j6NN0yCx",
+  "tags": []
+}
